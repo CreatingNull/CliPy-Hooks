@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""fns for clang-format, clang-tidy, oclint"""
+"""Command Class functionality for calling a CLI tool."""
 import difflib
 import os
 import re
@@ -10,7 +10,7 @@ from typing import List
 
 
 class Command:
-    """Super class that all commands inherit"""
+    """Super class that all commands inherit."""
 
     def __init__(self, command: str, look_behind: str, args: List[str]):
         self.args = args
