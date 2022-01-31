@@ -4,11 +4,10 @@
 #   https://github.com/pre-commit/pre-commit-hooks
 #   https://github.com/jumanjihouse/pre-commit-hooks
 # to use specific hooks and options.
-fail_fast: true
 
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: 1f6de3d70391131fac4b911ae913c568e571e34e
+    rev: v4.1.0
     hooks:
       - id: trailing-whitespace
         exclude: \.output
@@ -20,27 +19,15 @@ repos:
       - id: debug-statements
       - id: requirements-txt-fixer
   - repo: https://github.com/asottile/reorder_python_imports
-    rev: bc7b5b2f0fde191c9d0121588ef9bbb79f8e5e21
+    rev: v2.7.1
     hooks:
       - id: reorder-python-imports
         language_version: python3
-  - repo: https://github.com/pre-commit/pre-commit
-    rev: v2.16.0
-    hooks:
-    -   id: validate_manifest
   - repo: https://github.com/asottile/pyupgrade
     rev: v1.16.1
     hooks:
       - id: pyupgrade
-  - repo: https://github.com/ambv/black
-    rev: cea13f498418784e22f8fbd78db3f9240a2bad11
+  - repo: https://github.com/psf/black
+    rev: 21.11b1
     hooks:
       - id: black
-  - repo: local
-    hooks:
-      - id: tests
-        name: tests
-        entry: bash -c "pip install . && pytest -v -xxx"
-        description: Tests expected output of all scripts
-        language: system
-        types: [python]

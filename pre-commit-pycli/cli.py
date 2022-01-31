@@ -39,7 +39,9 @@ class Command:
         """Find added files using git."""
         added_files = sys.argv[1:]  # 1: don't include the hook file
         # cfg files are used by uncrustify and won't be source files
-        added_files = [f for f in added_files if os.path.exists(f) and not f.endswith(".cfg")]
+        added_files = [
+            f for f in added_files if os.path.exists(f) and not f.endswith(".cfg")
+        ]
 
         # Taken from https://github.com/pre-commit/pre-commit-hooks/blob/master/pre_commit_hooks/util.py
         # If no files are provided and if this is used as a command,
@@ -49,7 +51,8 @@ class Command:
             sp_child = sp.run(cmd, stdout=sp.PIPE, stderr=sp.PIPE)
             if sp_child.stderr or sp_child.returncode != 0:
                 self.raise_error(
-                    "Problem determining which files are being committed using git.", sp_child.stderr.decode()
+                    "Problem determining which files are being committed using git.",
+                    sp_child.stderr.decode(),
                 )
             added_files = sp_child.stdout.decode().splitlines()
         return added_files
@@ -66,14 +69,19 @@ class Command:
                     expected_version = args[args.index(arg) + 1]
                 # Expected split of --version=8.0.0 or --version 8.0.0 with as many spaces as needed
                 else:
-                    expected_version = arg.replace(" ", "").replace("=", "").replace("--version", "")
+                    expected_version = (
+                        arg.replace(" ", "").replace("=", "").replace("--version", "")
+                    )
                 actual_version = self.get_version_str()
                 self.assert_version(actual_version, expected_version)
         # All commands other than clang-tidy or oclint require files, --version ok
         is_cmd_clang_analyzer = self.command == "clang-tidy" or self.command == "oclint"
         has_args = self.files or self.args or "version" in self.args
         if not has_args and not is_cmd_clang_analyzer:
-            self.raise_error("Missing arguments", "No file arguments found and no files are pending commit.")
+            self.raise_error(
+                "Missing arguments",
+                "No file arguments found and no files are pending commit.",
+            )
 
     def add_if_missing(self, new_args: List[str]):
         """Add a default if it's missing from the command. This library
@@ -172,7 +180,13 @@ class FormatterCmd(Command):
             # no stdout. So compare the before/after file for hook pass/fail
             expected = self.get_filelines(filename_str)
         diff = list(
-            difflib.diff_bytes(difflib.unified_diff, actual, expected, fromfile=b"original", tofile=b"formatted")
+            difflib.diff_bytes(
+                difflib.unified_diff,
+                actual,
+                expected,
+                fromfile=b"original",
+                tofile=b"formatted",
+            )
         )
         if len(diff) > 0:
             if not self.no_diff_flag:
@@ -201,7 +215,9 @@ class FormatterCmd(Command):
     def get_filelines(self, filename: str):
         """Get the lines in a file."""
         if not os.path.exists(filename):
-            self.raise_error(f"File {filename} not found", "Check your path to the file.")
+            self.raise_error(
+                f"File {filename} not found", "Check your path to the file."
+            )
         with open(filename, "rb") as f:
             filetext = f.read()
         return filetext.split(b"\x0a")
