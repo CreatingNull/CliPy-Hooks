@@ -12,7 +12,7 @@ from typing import List
 class Command:
     """Super class that all commands inherit."""
 
-    def __init__(self, command: str, look_behind: str, args: List[str]):
+    def __init__(self, command: str, look_behind: str, args: List[str], help_url: str):
         self.args = args
         self.look_behind = look_behind
         self.command = command
@@ -24,11 +24,13 @@ class Command:
         self.stderr = b""
         self.returncode = 0
 
+        self.help_url = help_url
+
     def check_installed(self):
         """Check if command is installed and fail exit if not."""
         path = shutil.which(self.command)
         if path is None:
-            website = "https://github.com/pocc/pre-commit-hooks#example-usage"
+            website = self.help_url
             problem = self.command + " not found"
             details = """Make sure {} is installed and on your PATH.\nFor more info: {}""".format(
                 self.command, website
