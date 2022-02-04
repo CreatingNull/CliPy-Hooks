@@ -9,4 +9,4 @@ Credit to pocc's awesome [pre-commit hooks](https://github.com/pocc/pre-commit-h
 
 ## License
 
-The source of this repo maintains the Apache 2.0 open-source license of the original code, for details on the current licensing see [LICENSE](LICENSE) or click the badge above.
+The source of this repo maintains the Apache 2.0 open-source license of the original code, for details on the current licensing see [LICENSE](https://github.com/CreatingNull/Pre-Commit-PyCLI/blob/master/LICENSE) or click the badge above.

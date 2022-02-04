@@ -9,10 +9,19 @@ import sys
 from typing import List
 
 
+# This is the original design by pocc so ignore unless refactored.
+# pylint: disable=R0902
 class Command:
     """Super class that all commands inherit."""
 
     def __init__(self, command: str, look_behind: str, args: List[str], help_url: str):
+        """Constructor for the cli command class.
+
+        :param command: Name of the command, must be on path.
+        :param look_behind:
+        :param args:
+        :param help_url:
+        """
         self.args = args
         self.look_behind = look_behind
         self.command = command
@@ -32,9 +41,10 @@ class Command:
         if path is None:
             website = self.help_url
             problem = self.command + " not found"
-            details = """Make sure {} is installed and on your PATH.\nFor more info: {}""".format(
-                self.command, website
-            )  # noqa: E501
+            details = (
+                f"Make sure {self.command} is installed and on your PATH.\n"
+                f"For more info: {website}"
+            )
             self.raise_error(problem, details)
 
     def get_added_files(self):
@@ -45,12 +55,13 @@ class Command:
             f for f in added_files if os.path.exists(f) and not f.endswith(".cfg")
         ]
 
-        # Taken from https://github.com/pre-commit/pre-commit-hooks/blob/master/pre_commit_hooks/util.py
+        # Taken from:
+        # https://github.com/pre-commit/pre-commit-hooks/blob/master/pre_commit_hooks/util.py
         # If no files are provided and if this is used as a command,
         # Find files the same way pre-commit does.
         if len(added_files) == 0:
             cmd = ["git", "diff", "--staged", "--name-only", "--diff-filter=A"]
-            sp_child = sp.run(cmd, stdout=sp.PIPE, stderr=sp.PIPE)
+            sp_child = sp.run(cmd, stdout=sp.PIPE, stderr=sp.PIPE, check=False)
             if sp_child.stderr or sp_child.returncode != 0:
                 self.raise_error(
                     "Problem determining which files are being committed using git.",
@@ -60,7 +71,7 @@ class Command:
         return added_files
 
     def parse_args(self, args: List[str]):
-        """Parse the args into usable variables"""
+        """Parse the args into usable variables."""
         self.args = list(args[1:])  # don't include calling function
         for arg in args:
             if arg in self.files and not arg.startswith("-"):
@@ -76,22 +87,15 @@ class Command:
                     )
                 actual_version = self.get_version_str()
                 self.assert_version(actual_version, expected_version)
-        # All commands other than clang-tidy or oclint require files, --version ok
-        is_cmd_clang_analyzer = self.command == "clang-tidy" or self.command == "oclint"
-        has_args = self.files or self.args or "version" in self.args
-        if not has_args and not is_cmd_clang_analyzer:
-            self.raise_error(
-                "Missing arguments",
-                "No file arguments found and no files are pending commit.",
-            )
 
     def add_if_missing(self, new_args: List[str]):
-        """Add a default if it's missing from the command. This library
-        exists to force checking, so prefer those options.
-        len(new_args) should be 1, or 2 for options like --key=value
+        """Add a default if it's missing from the command. This library exists
+        to force checking, so prefer those options. len(new_args) should be 1,
+        or 2 for options like --key=value.
 
         If first arg is missing, add new_args to command's args
-        Do not change an option - in those cases return."""
+        Do not change an option - in those cases return.
+        """
         new_arg_key = new_args[0].split("=")[0]
         for arg in self.args:
             existing_arg_key = arg.split("=")[0]
@@ -104,10 +108,10 @@ class Command:
         expected_len = len(expected_ver)  # allows for fuzzy versions
         if expected_ver not in actual_ver[:expected_len]:
             problem = "Version of " + self.command + " is wrong"
-            details = """Expected version: {}
-Found version: {}
-Edit your pre-commit config or use a different version of {}.""".format(
-                expected_ver, actual_ver, self.command
+            details = (
+                f"Expected version: {expected_ver} Found version: {actual_ver}"
+                "Edit your pre-commit config or use a different version "
+                f"of {self.command}."
             )
             self.raise_error(problem, details)
         # If the version is correct, exit normally
@@ -126,50 +130,48 @@ Edit your pre-commit config or use a different version of {}.""".format(
     def get_version_str(self):
         """Get the version string like 8.0.0 for a given command."""
         args = [self.command, "--version"]
-        sp_child = sp.run(args, stdout=sp.PIPE, stderr=sp.PIPE)
+        sp_child = sp.run(args, stdout=sp.PIPE, stderr=sp.PIPE, check=False)
         version_str = str(sp_child.stdout, encoding="utf-8")
         # After version like `8.0.0` is expected to be '\n' or ' '
         regex = self.look_behind + r"((?:\d+\.)+[\d+_\+\-a-z]+)"
         search = re.search(regex, version_str)
         if not search:
-            details = """The version format for this command has changed.
-Create an issue at github.com/pocc/pre-commit-hooks."""
+            details = "The version format for this command has changed."
             self.raise_error("getting version", details)
         version = search.group(1)
         return version
 
 
 class StaticAnalyzerCmd(Command):
-    """Commmands that analyze code and are not formatters.s"""
-
-    def __init__(self, command: str, look_behind: str, args: List[str]):
-        super().__init__(command, look_behind, args)
+    """Commmands that analyze code and are not formatters.s."""
 
     def run_command(self, args: List[str]):
-        """Run the command and check for errors. Args includes options and filepaths"""
+        """Run the command and check for errors.
+
+        Args includes options and filepaths
+        """
         args = [self.command, *args]
-        sp_child = sp.run(args, stdout=sp.PIPE, stderr=sp.PIPE)
+        sp_child = sp.run(args, stdout=sp.PIPE, stderr=sp.PIPE, check=False)
         self.stdout += sp_child.stdout
         self.stderr += sp_child.stderr
         self.returncode = sp_child.returncode
 
     def exit_on_error(self):
+        """On non-zero code writes buffered error message and exits.
+
+        :return:
+        """
         if self.returncode != 0:
             sys.stderr.buffer.write(self.stdout + self.stderr)
             sys.exit(self.returncode)
 
 
 class FormatterCmd(Command):
-    """Commands that format code: clang-format, uncrustify"""
+    """Commands that format code: clang-format, uncrustify."""
 
-    def __init__(self, command: str, look_behind: str, args: List[str]):
-        super().__init__(command, look_behind, args)
+    def __init__(self, command: str, look_behind: str, args: List[str], help_url: str):
+        super().__init__(command, look_behind, args, help_url)
         self.file_flag = None
-
-    def set_diff_flag(self):
-        self.no_diff_flag = "--no-diff" in self.args
-        if self.no_diff_flag:
-            self.args.remove("--no-diff")
 
     def compare_to_formatted(self, filename_str: str) -> None:
         """Compare the expected formatted output to file contents."""
@@ -191,13 +193,12 @@ class FormatterCmd(Command):
             )
         )
         if len(diff) > 0:
-            if not self.no_diff_flag:
-                header = filename + b"\n" + 20 * b"=" + b"\n"
-                self.stderr += header + b"\n".join(diff) + b"\n"
+            header = filename + b"\n" + 20 * b"=" + b"\n"
+            self.stderr += header + b"\n".join(diff) + b"\n"
             self.returncode = 1
 
     def get_filename_opts(self, filename: str):
-        """uncrustify, to get stdout like clang-format, requires -f flag"""
+        """uncrustify, to get stdout like clang-format, requires -f flag."""
         if self.file_flag and not self.edit_in_place:
             return [self.file_flag, filename]
         return [filename]
@@ -206,10 +207,13 @@ class FormatterCmd(Command):
         """Get the expected output for a command applied to a file."""
         filename_opts = self.get_filename_opts(filename)
         args = [self.command, *self.args, *filename_opts]
-        child = sp.run(args, stdout=sp.PIPE, stderr=sp.PIPE)
+        child = sp.run(args, stdout=sp.PIPE, stderr=sp.PIPE, check=False)
         if len(child.stderr) > 0 or child.returncode != 0:
-            problem = f"Unexpected Stderr/return code received when analyzing {filename}.\nArgs: {args}"
-            self.raise_error(problem, child.stdout.decode() + child.stderr.decode())
+            self.raise_error(
+                "Unexpected Stderr/return code received "
+                f"when analyzing {filename}.\nArgs: {args}",
+                child.stdout.decode() + child.stderr.decode(),
+            )
         if child.stdout == b"":
             return []
         return child.stdout.split(b"\x0a")
@@ -220,6 +224,6 @@ class FormatterCmd(Command):
             self.raise_error(
                 f"File {filename} not found", "Check your path to the file."
             )
-        with open(filename, "rb") as f:
-            filetext = f.read()
+        with open(filename, "rb") as file:
+            filetext = file.read()
         return filetext.split(b"\x0a")
