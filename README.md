@@ -7,6 +7,16 @@ Credit to pocc's awesome [pre-commit hooks](https://github.com/pocc/pre-commit-h
 
 ---
 
+## Getting Started
+
+### Installing
+
+The easiest way to use the project is to install the latest pypi release via pip.
+
+```shell
+pip install pre-commit-pycli
+```
+
 ## License
 
 The source of this repo maintains the Apache 2.0 open-source license of the original code, for details on the current licensing see [LICENSE](https://github.com/CreatingNull/Pre-Commit-PyCLI/blob/master/LICENSE) or click the badge above.

@@ -6,6 +6,7 @@ import re
 import shutil
 import subprocess as sp
 import sys
+from pathlib import Path
 from typing import List
 
 
@@ -17,10 +18,10 @@ class Command:
     def __init__(self, command: str, look_behind: str, args: List[str], help_url: str):
         """Constructor for the cli command class.
 
-        :param command: Name of the command, must be on path.
-        :param look_behind:
-        :param args:
-        :param help_url:
+        :param command: Name of the command, must be on path or define install location.
+        :param look_behind: Defines the text preceding version output.
+        :param args: Additional arguments to provide to the CLI tool.
+        :param help_url: URL of project documentation to assist when things go wrong.
         """
         self.args = args
         self.look_behind = look_behind
@@ -34,18 +35,22 @@ class Command:
         self.returncode = 0
 
         self.help_url = help_url
+        self.install_path = None
 
     def check_installed(self):
         """Check if command is installed and fail exit if not."""
         path = shutil.which(self.command)
         if path is None:
-            website = self.help_url
-            problem = self.command + " not found"
-            details = (
-                f"Make sure {self.command} is installed and on your PATH.\n"
-                f"For more info: {website}"
+            check_path = (
+                f" at '{self.install_path}'"
+                if self.install_path is not None
+                else " and on your PATH."
             )
-            self.raise_error(problem, details)
+            details = (
+                f"Make sure {self.command} is installed {check_path}.\n"
+                f"For more info: {self.help_url}"
+            )
+            self.raise_error(f"{self.command} not found", details)
 
     def get_added_files(self):
         """Find added files using git."""
@@ -87,6 +92,15 @@ class Command:
                     )
                 actual_version = self.get_version_str()
                 self.assert_version(actual_version, expected_version)
+            if arg.startswith("--install-path"):
+                # Special arg for setting absolute install path
+                install_path = args[args.index(arg) + 1]
+                if not Path(install_path).exists():
+                    self.raise_error(
+                        "Install path argument is invalid.",
+                        f"The path '{install_path}' does not exist on the system.",
+                    )
+                self.install_path = install_path
 
     def add_if_missing(self, new_args: List[str]):
         """Add a default if it's missing from the command. This library exists
@@ -129,7 +143,12 @@ class Command:
 
     def get_version_str(self):
         """Get the version string like 8.0.0 for a given command."""
-        args = [self.command, "--version"]
+        args = [
+            self.command
+            if self.install_path is None
+            else self.install_path + self.command,
+            "--version",
+        ]
         sp_child = sp.run(args, stdout=sp.PIPE, stderr=sp.PIPE, check=False)
         version_str = str(sp_child.stdout, encoding="utf-8")
         # After version like `8.0.0` is expected to be '\n' or ' '
@@ -150,7 +169,12 @@ class StaticAnalyzerCmd(Command):
 
         Args includes options and filepaths
         """
-        args = [self.command, *args]
+        args = [
+            self.command
+            if self.install_path is None
+            else self.install_path + self.command,
+            *args,
+        ]
         sp_child = sp.run(args, stdout=sp.PIPE, stderr=sp.PIPE, check=False)
         self.stdout += sp_child.stdout
         self.stderr += sp_child.stderr
@@ -206,7 +230,13 @@ class FormatterCmd(Command):
     def get_formatted_lines(self, filename: str) -> List[bytes]:
         """Get the expected output for a command applied to a file."""
         filename_opts = self.get_filename_opts(filename)
-        args = [self.command, *self.args, *filename_opts]
+        args = [
+            self.command
+            if self.install_path is None
+            else self.install_path + self.command,
+            *self.args,
+            *filename_opts,
+        ]
         child = sp.run(args, stdout=sp.PIPE, stderr=sp.PIPE, check=False)
         if len(child.stderr) > 0 or child.returncode != 0:
             self.raise_error(
