@@ -171,11 +171,13 @@ class StaticAnalyzerCmd(Command):
 
         Args includes options and filepaths
         """
+        self.check_installed()
         args = [self.install_path + self.command, *args]
         sp_child = sp.run(args, stdout=sp.PIPE, stderr=sp.PIPE, check=False)
         self.stdout += sp_child.stdout
         self.stderr += sp_child.stderr
         self.returncode = sp_child.returncode
+        self.exit_on_error()
 
     def exit_on_error(self):
         """On non-zero code writes buffered error message and exits.
