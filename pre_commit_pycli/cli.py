@@ -35,16 +35,22 @@ class Command:
         self.returncode = 0
 
         self.help_url = help_url
-        self.install_path = None
+        self.install_path = ""
+        self.parse_args(self.args)
 
     def check_installed(self):
         """Check if command is installed and fail exit if not."""
-        path = shutil.which(self.command)
+        if self.install_path == "":  # Resolve command from PATH
+            path = shutil.which(self.command)
+        else:  # Resolve absolute executable
+            path = Path(self.install_path).joinpath(self.command)
+            if not path.exists():
+                path = None  # Executable not found
         if path is None:
             check_path = (
                 f" at '{self.install_path}'"
-                if self.install_path is not None
-                else " and on your PATH."
+                if self.install_path != ""
+                else " and on your PATH"
             )
             details = (
                 f"Make sure {self.command} is installed {check_path}.\n"
@@ -93,14 +99,15 @@ class Command:
                 actual_version = self.get_version_str()
                 self.assert_version(actual_version, expected_version)
             if arg.startswith("--install-path"):
-                # Special arg for setting absolute install path
+                # Special arg for setting absolute installation path.
                 install_path = args[args.index(arg) + 1]
                 if not Path(install_path).exists():
                     self.raise_error(
                         "Install path argument is invalid.",
                         f"The path '{install_path}' does not exist on the system.",
                     )
-                self.install_path = install_path
+                # Resolve relative paths to absolute.
+                self.install_path = Path(install_path).resolve().__str__()
 
     def add_if_missing(self, new_args: List[str]):
         """Add a default if it's missing from the command. This library exists
@@ -143,12 +150,7 @@ class Command:
 
     def get_version_str(self):
         """Get the version string like 8.0.0 for a given command."""
-        args = [
-            self.command
-            if self.install_path is None
-            else self.install_path + self.command,
-            "--version",
-        ]
+        args = [self.install_path + self.command, "--version"]
         sp_child = sp.run(args, stdout=sp.PIPE, stderr=sp.PIPE, check=False)
         version_str = str(sp_child.stdout, encoding="utf-8")
         # After version like `8.0.0` is expected to be '\n' or ' '
@@ -162,19 +164,14 @@ class Command:
 
 
 class StaticAnalyzerCmd(Command):
-    """Commmands that analyze code and are not formatters.s."""
+    """Commmands that analyze code and are not formatters."""
 
     def run_command(self, args: List[str]):
         """Run the command and check for errors.
 
         Args includes options and filepaths
         """
-        args = [
-            self.command
-            if self.install_path is None
-            else self.install_path + self.command,
-            *args,
-        ]
+        args = [self.install_path + self.command, *args]
         sp_child = sp.run(args, stdout=sp.PIPE, stderr=sp.PIPE, check=False)
         self.stdout += sp_child.stdout
         self.stderr += sp_child.stderr
@@ -191,22 +188,18 @@ class StaticAnalyzerCmd(Command):
 
 
 class FormatterCmd(Command):
-    """Commands that format code: clang-format, uncrustify."""
-
-    def __init__(self, command: str, look_behind: str, args: List[str], help_url: str):
-        super().__init__(command, look_behind, args, help_url)
-        self.file_flag = None
+    """Commands that format code."""
 
     def compare_to_formatted(self, filename_str: str) -> None:
         """Compare the expected formatted output to file contents."""
         # This string encode is from argparse, so we should be able to trust it.
         filename = filename_str.encode()
-        actual = self.get_filelines(filename_str)
+        actual = self.get_file_lines(filename_str)
         expected = self.get_formatted_lines(filename_str)
         if self.edit_in_place:
             # If edit in place is used, the formatter will fix in place with
             # no stdout. So compare the before/after file for hook pass/fail
-            expected = self.get_filelines(filename_str)
+            expected = self.get_file_lines(filename_str)
         diff = list(
             difflib.diff_bytes(
                 difflib.unified_diff,
@@ -221,22 +214,9 @@ class FormatterCmd(Command):
             self.stderr += header + b"\n".join(diff) + b"\n"
             self.returncode = 1
 
-    def get_filename_opts(self, filename: str):
-        """uncrustify, to get stdout like clang-format, requires -f flag."""
-        if self.file_flag and not self.edit_in_place:
-            return [self.file_flag, filename]
-        return [filename]
-
     def get_formatted_lines(self, filename: str) -> List[bytes]:
         """Get the expected output for a command applied to a file."""
-        filename_opts = self.get_filename_opts(filename)
-        args = [
-            self.command
-            if self.install_path is None
-            else self.install_path + self.command,
-            *self.args,
-            *filename_opts,
-        ]
+        args = [self.install_path + self.command, *self.args, filename]
         child = sp.run(args, stdout=sp.PIPE, stderr=sp.PIPE, check=False)
         if len(child.stderr) > 0 or child.returncode != 0:
             self.raise_error(
@@ -248,12 +228,12 @@ class FormatterCmd(Command):
             return []
         return child.stdout.split(b"\x0a")
 
-    def get_filelines(self, filename: str):
+    def get_file_lines(self, filename: str):
         """Get the lines in a file."""
         if not os.path.exists(filename):
             self.raise_error(
                 f"File {filename} not found", "Check your path to the file."
             )
         with open(filename, "rb") as file:
-            filetext = file.read()
-        return filetext.split(b"\x0a")
+            file_text = file.read()
+        return file_text.split(b"\x0a")
