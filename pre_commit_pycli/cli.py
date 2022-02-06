@@ -89,7 +89,7 @@ class Command:
         problem = "Version of " + self.command + " is wrong."
         details = (
             f"Expected version: {expected_ver} Found version: {actual_ver}. "
-            "Edit your pre-commit config or use a different version"
+            "Edit your pre-commit config or use a different version "
             f"of {self.command}."
         )
         self.__raise_error(problem, details)
