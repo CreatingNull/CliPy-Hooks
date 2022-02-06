@@ -51,6 +51,12 @@ def test_command_version_mismatch(command: Command):
         command._parse_args()
 
 
+def test_run_static_analyser_on_path():
+    """Just check resolving a random program via path."""
+    path_cmd = StaticAnalyzerCmd("whoami", [])
+    assert path_cmd.run_command()
+
+
 def test_run_static_analyser_zero(static_analyser: StaticAnalyzerCmd):
     """Check to make sure no error is thrown on run."""
     assert static_analyser.run_command()

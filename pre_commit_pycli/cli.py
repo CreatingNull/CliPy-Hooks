@@ -34,16 +34,16 @@ class Command:
 
     def check_installed(self):
         """Check if command is installed and fail exit if not."""
-        if self.install_path == "":  # Resolve command from PATH
-            path = shutil.which(self.command)
-        else:  # Resolve absolute executable
+        if self.install_path != Path():  # Resolve absolute executable
             path = Path(self.install_path).joinpath(self.command)
-            if not path.exists():
+            if not path.exists() or not path.is_file():
                 path = None  # Executable not found
+        else:  # Resolve command from PATH
+            path = shutil.which(self.command)
         if path is None:
             check_path = (
                 f"at '{self.install_path}'"
-                if self.install_path != ""
+                if self.install_path != Path()
                 else "and on your PATH"
             )
             details = f"Make sure {self.command} is installed {check_path}.\n" + (
@@ -108,7 +108,14 @@ class Command:
         return search.group(1)
 
     def _execute_with_arguments(self, args) -> sp.CompletedProcess:
-        args = [self.install_path.joinpath(self.command), *args]
+        args = [
+            (
+                self.install_path.joinpath(self.command).resolve()
+                if self.install_path != Path()
+                else Path(self.command)  # On path
+            ),
+            *args,
+        ]
         if args[0].suffix == ".py":  # Run python script
             args.insert(0, "python")
         return sp.run(args, stdout=sp.PIPE, stderr=sp.PIPE, check=False)
