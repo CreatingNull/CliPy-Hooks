@@ -8,6 +8,8 @@ def main():
     parser.add_argument("filenames", nargs="*")
     parser.add_argument("--version", action="version", version="CLI 1.0.0")
     parser.add_argument("--fail", action="store_true")
+    parser.add_argument("--a-flag", action="store_true")
+    parser.add_argument("--an-arg", type=str)
     args = parser.parse_args()
     if args.fail:
         return 1

@@ -1,8 +1,14 @@
 """Test cases for checking the cli module functionality."""
+from pathlib import Path
+
 import pytest
 
 from pre_commit_pycli.cli import Command
 from pre_commit_pycli.cli import StaticAnalyzerCmd
+
+
+# Protected access is okay for testing.
+# pylint: disable=W0212
 
 
 def test_check_installed(static_analyser: StaticAnalyzerCmd):
@@ -16,32 +22,33 @@ def test_check_installed_fails():
         StaticAnalyzerCmd("pre-commit-pycli-testing", []).check_installed()
 
 
+def test_command_args(command: Command):
+    """Check the files are seperated correctly from args."""
+    assert len(command.args) == 2
+
+
 def test_command_files(command: Command):
     """Ensure a file argument is loaded into the list correctly."""
-    assert len(command.files) == 1
+    assert len(command.paths) == 1
 
 
 def test_command_install_path(command: Command):
     """Ensure absolute install path is resolved."""
-    assert len(command.install_path) > 0
-
-
-def test_command_args(command: Command):
-    """Check the files are seperated correctly from args."""
-    assert len(command.args) == 0
+    assert command.install_path != Path()
+    assert command.install_path.is_dir()
 
 
 def test_command_version_match(command: Command):
     """Check hook version check works correctly."""
     command.args.extend(["--version", "1.0.0"])
-    assert command.parse_args() is None
+    assert command._parse_args() is None
 
 
 def test_command_version_mismatch(command: Command):
     """Check a mismatched tool version errors correctly."""
     command.args.extend(["--version", "1.0.1"])
     with pytest.raises(SystemExit):
-        command.parse_args()
+        command._parse_args()
 
 
 def test_run_static_analyser_zero(static_analyser: StaticAnalyzerCmd):

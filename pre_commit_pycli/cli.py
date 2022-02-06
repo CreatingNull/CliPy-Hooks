@@ -4,12 +4,11 @@ import re
 import shutil
 import subprocess as sp
 import sys
+from argparse import ArgumentParser
 from pathlib import Path
 from typing import List
 
 
-# This is the original design by pocc so ignore unless refactored.
-# pylint: disable=R0902
 class Command:
     """Super class that all commands inherit."""
 
@@ -22,15 +21,16 @@ class Command:
         """
         self.args = args
         self.command = command
-        self.files = []
+        self.install_path = Path()
+        # Most use-cases should be either files or dir not both.
+        self.paths = []  # Positional path arguments to provide to CLI tool
 
         self.stdout = b""
         self.stderr = b""
         self.return_code = 0
-
         self.help_url = help_url
-        self.install_path = ""
-        self.parse_args()
+
+        self._parse_args()
 
     def check_installed(self):
         """Check if command is installed and fail exit if not."""
@@ -51,36 +51,26 @@ class Command:
             )
             self.__raise_error(f"{self.command} not found", details)
 
-    def parse_args(self):
-        """Parse the args into usable variables."""
-        args = self.args
-        args.reverse()  # Start with positional args
-        positional = True
-        for arg in args:
-            if arg.startswith("-"):
-                positional = False
-            if arg.strip() == "":  # Remove empty args
-                del self.args[args.index(arg)]
-            if positional and Path(arg).exists() and Path(arg).is_file():
-                self.files.append(arg)
-                del self.args[args.index(arg)]
-            if arg.startswith("--version") and args.index(arg) > 0:
-                # Expected split of --version=8.0.0 or --version 8.0.0 with as many spaces as needed
-                actual_version = self._get_version_str()
-                self._assert_version(actual_version, args[args.index(arg) - 1])
-            if arg.startswith("--install-dir") and args.index(arg) > 0:
-                # Special arg for setting absolute installation path.
-                install_path = args[args.index(arg) - 1]
-                if not Path(install_path).exists():
-                    self.__raise_error(
-                        "Install path argument is invalid.",
-                        f"The path '{install_path}' does not exist on the system.",
-                    )
-                # Resolve relative paths to absolute.
-                self.install_path = Path(install_path).resolve().__str__()
-                # Remove special arguments from call
-                del self.args[args.index(arg) - 1]
-                del self.args[args.index(arg)]
+    def _parse_args(self):
+        """Validates and separates provided arguments.
+
+        Removes arguments consumed by the shim. Separates positional
+        file/dir arguments. Leaves self.args populated with cmd args.
+        """
+        # Due to ambiguity in '--arg value/arg' format
+        # non-shim CLI args should be provided in '--arg=value' form
+        parser = ArgumentParser()
+        parser.add_argument("--install-dir", type=Path, default=self.install_path)
+        parser.add_argument("--version", type=str)
+        parser.add_argument("paths", nargs="*")
+        shim_args, self.args = parser.parse_known_args(self.args)
+        self.install_path = shim_args.install_dir
+        self.paths = shim_args.paths
+        if shim_args.version is not None:  # Verify the version before continuing
+            self._assert_version(
+                self.get_version_str(),
+                shim_args.version,
+            )
 
     def _assert_version(self, actual_ver: str, expected_ver: str):
         """--version hook arg enforces specific versions of tools."""
@@ -104,7 +94,7 @@ class Command:
         sys.stderr.buffer.write(self.stderr)
         raise SystemExit(self.return_code)
 
-    def _get_version_str(self):
+    def get_version_str(self):
         """Get the semantic version string for a given command."""
         sp_child = self._execute_with_arguments(["--version"])
         version_str = str(sp_child.stdout, encoding="utf-8")
@@ -118,7 +108,7 @@ class Command:
         return search.group(1)
 
     def _execute_with_arguments(self, args) -> sp.CompletedProcess:
-        args = [Path(self.install_path).joinpath(self.command), *args]
+        args = [self.install_path.joinpath(self.command), *args]
         if args[0].suffix == ".py":  # Run python script
             args.insert(0, "python")
         return sp.run(args, stdout=sp.PIPE, stderr=sp.PIPE, check=False)
@@ -133,7 +123,7 @@ class StaticAnalyzerCmd(Command):
         Args includes options and filepaths
         """
         self.check_installed()
-        sp_child = self._execute_with_arguments([*self.args, *self.files])
+        sp_child = self._execute_with_arguments([*self.args, *self.paths])
         self.stdout += sp_child.stdout
         self.stderr += sp_child.stderr
         self.return_code = sp_child.returncode
