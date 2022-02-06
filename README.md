@@ -2,8 +2,8 @@
 
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/pre-commit-pycli?style=flat-square&logo=python&logoColor=white)](https://pypi.org/project/pre-commit-pycli/)
 [![PyPI](https://img.shields.io/pypi/v/pre-commit-pycli?style=flat-square&logo=pypi&logoColor=white)](https://pypi.org/project/pre-commit-pycli/)
-[![Tests](https://img.shields.io/github/workflow/status/CreatingNull/pre-commit-pycli/tests?logo=pre-commit&style=flat-square&label=format)](https://github.com/CreatingNull/pre-commit-pycli/actions/workflows/run-tests.yaml)
-[![Tests](https://img.shields.io/github/workflow/status/CreatingNull/pre-commit-pycli/pre-commit?logo=GitHub&style=flat-square&label=tests)](https://github.com/CreatingNull/pre-commit-pycli/actions/workflows/run-pre-commit.yaml)
+[![Tests](https://img.shields.io/github/workflow/status/CreatingNull/pre-commit-pycli/pre-commit?logo=pre-commit&style=flat-square&label=format)](https://github.com/CreatingNull/pre-commit-pycli/actions/workflows/run-pre-commit.yaml)
+[![Tests](https://img.shields.io/github/workflow/status/CreatingNull/pre-commit-pycli/tests?logo=GitHub&style=flat-square&label=tests)](https://github.com/CreatingNull/pre-commit-pycli/actions/workflows/run-tests.yaml)
 [![License](https://img.shields.io/github/license/CreatingNull/pre-commit-pycli?style=flat-square)](LICENSE)
 [![Code Style](https://img.shields.io/badge/code%20style-black-000000.svg?style=flat-square)](https://github.com/psf/black)
 
