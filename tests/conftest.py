@@ -6,6 +6,7 @@ from pre_commit_pycli.cli import StaticAnalyzerCmd
 
 
 CALL_ARGS = [
+    "__main__.py",
     "--a-flag",
     "--an-arg=cli/__main__.py",
     "--install-dir",
@@ -18,7 +19,7 @@ CALL_ARGS = [
 def static_analyser() -> StaticAnalyzerCmd:
     """Create a StaticAnalyzerCmd fixture using the mocked CLI."""
     return StaticAnalyzerCmd(
-        "__main__.py",
+        CALL_ARGS[0],
         CALL_ARGS,
     )
 
@@ -27,6 +28,6 @@ def static_analyser() -> StaticAnalyzerCmd:
 def command() -> Command:
     """Create a generic Command fixture for testing abstract functionality."""
     return Command(
-        "__main__.py",
+        CALL_ARGS[0],
         CALL_ARGS,
     )
