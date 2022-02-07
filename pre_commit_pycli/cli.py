@@ -57,6 +57,7 @@ class Command:
         Removes arguments consumed by the shim. Separates positional
         file/dir arguments. Leaves self.args populated with cmd args.
         """
+        self.args = self.args[1:]  # We don't use the argv[0] call arg.
         # Due to ambiguity in '--arg value/arg' format
         # non-shim CLI args should be provided in '--arg=value' form
         parser = ArgumentParser()
@@ -64,7 +65,6 @@ class Command:
         parser.add_argument("--version", type=str)
         parser.add_argument("paths", nargs="*")
         shim_args, self.args = parser.parse_known_args(self.args)
-        self.args = self.args[1:]  # We don't use the argv[0] call arg.
         self.install_path = shim_args.install_dir
         self.paths = shim_args.paths
         if shim_args.version is not None:  # Verify the version before continuing
