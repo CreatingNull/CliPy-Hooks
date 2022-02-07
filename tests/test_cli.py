@@ -64,6 +64,6 @@ def test_run_static_analyser_zero(static_analyser: StaticAnalyzerCmd):
 
 def test_run_static_analyser_non_zero(static_analyser: StaticAnalyzerCmd):
     """Check to make sure no error is thrown on run."""
-    static_analyser.args.append("--fail")
+    static_analyser.args.insert(0, "--fail")
     with pytest.raises(SystemExit):
         assert not static_analyser.run_command()

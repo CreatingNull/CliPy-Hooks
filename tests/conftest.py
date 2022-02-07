@@ -15,7 +15,7 @@ CALL_ARGS = [
 ]
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="function")
 def static_analyser() -> StaticAnalyzerCmd:
     """Create a StaticAnalyzerCmd fixture using the mocked CLI."""
     return StaticAnalyzerCmd(
@@ -24,7 +24,7 @@ def static_analyser() -> StaticAnalyzerCmd:
     )
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="function")
 def command() -> Command:
     """Create a generic Command fixture for testing abstract functionality."""
     return Command(
