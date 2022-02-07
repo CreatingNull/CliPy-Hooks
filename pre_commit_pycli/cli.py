@@ -49,7 +49,7 @@ class Command:
             details = f"Make sure {self.command} is installed {check_path}.\n" + (
                 f"For more info: {self.help_url}" if self.help_url != "" else ""
             )
-            self.__raise_error(f"{self.command} not found", details)
+            self.raise_error(f"{self.command} not found", details)
 
     def _parse_args(self):
         """Validates and separates provided arguments.
@@ -83,9 +83,9 @@ class Command:
             "Edit your pre-commit config or use a different version "
             f"of {self.command}."
         )
-        self.__raise_error(problem, details)
+        self.raise_error(problem, details)
 
-    def __raise_error(self, problem: str, details: str):
+    def raise_error(self, problem: str, details: str):
         """Raise a formatted error."""
         format_list = [self.command, problem, details]
         stderr_str = """Problem with {}: {}\n{}\n""".format(*format_list)
@@ -105,7 +105,7 @@ class Command:
         search = re.search(regex, version_str)
         if not search:
             details = "The version format for this command has changed."
-            self.__raise_error("getting version", details)
+            self.raise_error("getting version", details)
         return search.group(1)
 
     def _execute_with_arguments(self, args) -> sp.CompletedProcess:
@@ -126,10 +126,7 @@ class StaticAnalyzerCmd(Command):
     """Commands that analyze code and do not modify it."""
 
     def run_command(self) -> bool:
-        """Run the command and check for errors.
-
-        Args includes options and filepaths
-        """
+        """Execute the static analyser command."""
         self.check_installed()
         sp_child = self._execute_with_arguments([*self.args, *self.paths])
         self.stdout += sp_child.stdout
