@@ -3,8 +3,8 @@ from pathlib import Path
 
 import pytest
 
-from pre_commit_pycli.cli import Command
-from pre_commit_pycli.cli import StaticAnalyzerCmd
+from clipy_hooks.cli import Command
+from clipy_hooks.cli import StaticAnalyzerCmd
 
 
 # Protected access is okay for testing.
@@ -19,7 +19,7 @@ def test_check_installed(static_analyser: StaticAnalyzerCmd):
 def test_check_installed_fails():
     """Check a not found command fails."""
     with pytest.raises(SystemExit):
-        StaticAnalyzerCmd("pre-commit-pycli-testing", []).check_installed()
+        StaticAnalyzerCmd("clipy-hooks-testing", []).check_installed()
 
 
 def test_command_args(command: Command):

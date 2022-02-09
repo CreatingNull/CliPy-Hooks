@@ -1,10 +1,10 @@
-# ![NullTek Documentation](https://raw.githubusercontent.com/CreatingNull/NullTek-Assets/main/img/logo/NullTekDocumentationLogo.png) Pre-Commit PyCLI
+# ![NullTek Documentation](https://raw.githubusercontent.com/CreatingNull/NullTek-Assets/main/img/logo/NullTekDocumentationLogo.png) CliPy Hooks
 
-[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/pre-commit-pycli?style=flat-square&logo=python&logoColor=white)](https://pypi.org/project/pre-commit-pycli/)
-[![PyPI](https://img.shields.io/pypi/v/pre-commit-pycli?style=flat-square&logo=pypi&logoColor=white)](https://pypi.org/project/pre-commit-pycli/)
-[![Tests](https://img.shields.io/github/workflow/status/CreatingNull/pre-commit-pycli/pre-commit?logo=pre-commit&style=flat-square&label=format)](https://github.com/CreatingNull/pre-commit-pycli/actions/workflows/run-pre-commit.yaml)
-[![Tests](https://img.shields.io/github/workflow/status/CreatingNull/pre-commit-pycli/tests?logo=GitHub&style=flat-square&label=tests)](https://github.com/CreatingNull/pre-commit-pycli/actions/workflows/run-tests.yaml)
-[![License](https://img.shields.io/github/license/CreatingNull/pre-commit-pycli?style=flat-square)](LICENSE)
+[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/clipy-hooks?style=flat-square&logo=python&logoColor=white)](https://pypi.org/project/clipy-hooks/)
+[![PyPI](https://img.shields.io/pypi/v/clipy-hooks?style=flat-square&logo=pypi&logoColor=white)](https://pypi.org/project/clipy-hooks/)
+[![Tests](https://img.shields.io/github/workflow/status/CreatingNull/clipy-hooks/pre-commit?logo=pre-commit&style=flat-square&label=format)](https://github.com/CreatingNull/clipy-hooks/actions/workflows/run-pre-commit.yaml)
+[![Tests](https://img.shields.io/github/workflow/status/CreatingNull/clipy-hooks/tests?logo=GitHub&style=flat-square&label=tests)](https://github.com/CreatingNull/clipy-hooks/actions/workflows/run-tests.yaml)
+[![License](https://img.shields.io/github/license/CreatingNull/clipy-hooks?style=flat-square)](https://github.com/CreatingNull/clipy-hooks/blob/master/LICENSE)
 [![Code Style](https://img.shields.io/badge/code%20style-black-000000.svg?style=flat-square)](https://github.com/psf/black)
 
 This project is a library handling generic execution of command line interfaces using python, it is a cross-platform shim between pre-installed system executables and pre-commit.
@@ -21,9 +21,9 @@ Credit to pocc's awesome [pre-commit hooks](https://github.com/pocc/pre-commit-h
 The easiest way to use the project is to install the latest pypi release via pip.
 
 ```shell
-pip install pre-commit-pycli
+pip install clipy-hooks
 ```
 
 ## License
 
-The source of this repo maintains the Apache 2.0 open-source license of the original code, for details on the current licensing see [LICENSE](https://github.com/CreatingNull/Pre-Commit-PyCLI/blob/master/LICENSE) or click the badge above.
+The source of this repo maintains the Apache 2.0 open-source license of the original code, for details on the current licensing see [LICENSE](https://github.com/CreatingNull/clipy-hooks/blob/master/LICENSE) or click the badge above.

@@ -1,8 +1,8 @@
 """Pytest configuration to create reusable fixtures."""
 import pytest
 
-from pre_commit_pycli.cli import Command
-from pre_commit_pycli.cli import StaticAnalyzerCmd
+from clipy_hooks.cli import Command
+from clipy_hooks.cli import StaticAnalyzerCmd
 
 
 CALL_ARGS = [
