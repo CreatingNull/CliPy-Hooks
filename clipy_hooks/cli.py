@@ -119,7 +119,14 @@ class Command:
         ]
         if args[0].suffix == ".py":  # Run python script
             args.insert(0, "python")
-        return sp.run(args, stdout=sp.PIPE, stderr=sp.PIPE, check=False)
+        return sp.run(  # nosec B603
+            # We assemble the args internally so should be safe
+            args,
+            stdout=sp.PIPE,
+            stderr=sp.PIPE,
+            check=False,
+            shell=False,
+        )
 
 
 class StaticAnalyzerCmd(Command):

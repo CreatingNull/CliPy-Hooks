@@ -35,3 +35,12 @@ repos:
       rev: v2.12.2
       hooks:
       -   id: pylint
+  -   repo: https://github.com/PyCQA/bandit
+      rev: 1.7.2
+      hooks:
+        -  id: bandit
+           args: [
+             --skip, "B404,B101"
+             # B404 Subprocess module use is intentional and considered.
+             # B101 Assert is used exclusively for tests.
+           ]
