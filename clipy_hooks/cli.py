@@ -66,7 +66,9 @@ class Command:
         parser.add_argument("paths", nargs="*")
         shim_args, self.args = parser.parse_known_args(self.args)
         self.install_path = shim_args.install_dir
-        self.paths = shim_args.paths
+        # Filter positional arguments from paths that exist
+        self.paths = [path for path in shim_args.paths if Path(path).exists()]
+        self.args += list(set(shim_args.paths) - set(self.paths))
         if shim_args.version is not None:  # Verify the version before continuing
             self._assert_version(
                 self.get_version_str(),
