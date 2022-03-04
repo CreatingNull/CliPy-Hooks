@@ -1,7 +1,7 @@
 Version 0.1.1
 -------------
 
-:Date: 3-March-2022
+:Date: 5-March-2022
 
 * Adding support for positional arguments being passed to the cli tool.
 
