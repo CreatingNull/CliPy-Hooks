@@ -1,3 +1,10 @@
+Version 0.2.0
+-------------
+
+:Date: TBC
+
+* Updated ``CHANGELOG.rst`` to ``CHANGES.rst`` for consistency with newer projects.
+
 Version 0.1.1
 -------------
 
