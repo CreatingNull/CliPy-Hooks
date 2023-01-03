@@ -4,7 +4,7 @@
 [![PyPI](https://img.shields.io/pypi/v/clipy-hooks?style=flat-square&logo=pypi&logoColor=white)](https://pypi.org/project/clipy-hooks/)
 [![Format](https://img.shields.io/github/actions/workflow/status/CreatingNull/clipy-hooks/run-pre-commit.yaml?branch=main&logo=pre-commit&style=flat-square&label=format)](https://github.com/CreatingNull/clipy-hooks/actions/workflows/run-pre-commit.yaml)
 [![Tests](https://img.shields.io/github/actions/workflow/status/CreatingNull/clipy-hooks/run-tests.yaml?branch=main&logo=GitHub&style=flat-square&label=tests)](https://github.com/CreatingNull/clipy-hooks/actions/workflows/run-tests.yaml)
-[![License](https://img.shields.io/github/license/CreatingNull/clipy-hooks?style=flat-square)](https://github.com/CreatingNull/clipy-hooks/blob/master/LICENSE)
+[![License](https://img.shields.io/github/license/CreatingNull/clipy-hooks?style=flat-square)](https://github.com/CreatingNull/clipy-hooks/blob/main/LICENSE)
 
 This project is a library handling generic execution of command line interfaces using python, it is a cross-platform shim between pre-installed system executables and pre-commit.
 The intended use-case is for creating new [pre-commit](https://pre-commit.com) hooks without fussing over the boilerplate of handling the CLI.
@@ -25,4 +25,4 @@ pip install clipy-hooks
 
 ## License
 
-The source of this repo maintains the Apache 2.0 open-source license of the original code, for details on the current licensing see [LICENSE](https://github.com/CreatingNull/clipy-hooks/blob/master/LICENSE) or click the badge above.
+The source of this repo maintains the Apache 2.0 open-source license of the original code, for details on the current licensing see [LICENSE](https://github.com/CreatingNull/clipy-hooks/blob/main/LICENSE) or click the badge above.
