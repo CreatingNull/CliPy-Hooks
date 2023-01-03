@@ -3,7 +3,7 @@ from argparse import ArgumentParser
 
 
 def main():
-    """Mocks CLI behaviour."""
+    """Mock CLI behaviour."""
     parser = ArgumentParser()
     parser.add_argument("filenames", nargs="*")
     parser.add_argument("--version", action="version", version="CLI 1.0.0")

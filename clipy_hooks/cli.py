@@ -13,7 +13,7 @@ class Command:
     """Super class that all commands inherit."""
 
     def __init__(self, command: str, args: List[str], help_url: str = ""):
-        """Constructor for the cli command class.
+        """Construct the cli command class.
 
         :param command: Name of the command, must be on path or define install location.
         :param args: Additional arguments to provide to the CLI tool.
@@ -32,7 +32,7 @@ class Command:
 
         self._parse_args()
 
-    def check_installed(self):
+    def check_installed(self) -> None:
         """Check if command is installed and fail exit if not."""
         if self.install_path != Path():  # Resolve absolute executable
             path = Path(self.install_path).joinpath(self.command)
@@ -51,8 +51,8 @@ class Command:
             )
             self.raise_error(f"{self.command} not found", details)
 
-    def _parse_args(self):
-        """Validates and separates provided arguments.
+    def _parse_args(self) -> None:
+        """Validate and separate provided arguments.
 
         Removes arguments consumed by the shim. Separates positional
         file/dir arguments. Leaves self.args populated with cmd args.
@@ -75,7 +75,7 @@ class Command:
                 shim_args.version,
             )
 
-    def _assert_version(self, actual_ver: str, expected_ver: str):
+    def _assert_version(self, actual_ver: str, expected_ver: str) -> None:
         """--version hook arg enforces specific versions of tools."""
         if expected_ver in actual_ver:
             return  # If the version is correct, continue execution
@@ -87,7 +87,7 @@ class Command:
         )
         self.raise_error(problem, details)
 
-    def raise_error(self, problem: str, details: str):
+    def raise_error(self, problem: str, details: str) -> None:
         """Raise a formatted error."""
         format_list = [self.command, problem, details]
         stderr_str = """Problem with {}: {}\n{}\n""".format(*format_list)
@@ -97,7 +97,7 @@ class Command:
         sys.stderr.buffer.write(self.stderr)
         raise SystemExit(self.return_code)
 
-    def get_version_str(self):
+    def get_version_str(self) -> str:
         """Get the semantic version string for a given command."""
         sp_child = self._execute_with_arguments(["--version"])
         version_str = str(sp_child.stdout, encoding="utf-8")
@@ -105,12 +105,12 @@ class Command:
         # (\d.){1,2}(\d)
         regex = r"((?:\d+\.)+[\d+_\+\-a-z]+)"
         search = re.search(regex, version_str)
-        if not search:
+        if not search or len(search.groups()) == 0:
             details = "The version format for this command has changed."
             self.raise_error("getting version", details)
         return search.group(1)
 
-    def _execute_with_arguments(self, args) -> sp.CompletedProcess:
+    def _execute_with_arguments(self, args: List) -> sp.CompletedProcess:
         args = [
             (
                 self.install_path.joinpath(self.command).resolve()
@@ -131,10 +131,12 @@ class Command:
         )
 
 
-class StaticAnalyzerCmd(Command):
+# False positive as this is a client facing interface.
+class StaticAnalyzerCmd(Command):  # dead: disable
     """Commands that analyze code and do not modify it."""
 
-    def run_command(self) -> bool:
+    # False positive as this is a client facing interface.
+    def run_command(self) -> bool:  # dead: disable
         """Execute the static analyser command."""
         self.check_installed()
         sp_child = self._execute_with_arguments([*self.args, *self.paths])
@@ -144,11 +146,8 @@ class StaticAnalyzerCmd(Command):
         self.exit_on_error()
         return self.return_code == 0
 
-    def exit_on_error(self):
-        """On non-zero code writes buffered error message and exits.
-
-        :return:
-        """
+    def exit_on_error(self) -> None:
+        """On non-zero code writes buffered error message and exits."""
         if self.return_code != 0:
             sys.stderr.buffer.write(self.stdout + self.stderr)
             raise SystemExit(self.return_code)

@@ -3,9 +3,7 @@ from pathlib import Path
 
 import pytest
 
-from clipy_hooks.cli import Command
-from clipy_hooks.cli import StaticAnalyzerCmd
-
+from clipy_hooks.cli import Command, StaticAnalyzerCmd
 
 # Protected access is okay for testing.
 # pylint: disable=W0212

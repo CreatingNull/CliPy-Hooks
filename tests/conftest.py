@@ -1,9 +1,7 @@
 """Pytest configuration to create reusable fixtures."""
 import pytest
 
-from clipy_hooks.cli import Command
-from clipy_hooks.cli import StaticAnalyzerCmd
-
+from clipy_hooks.cli import Command, StaticAnalyzerCmd
 
 CALL_ARGS = [
     "__main__.py",
