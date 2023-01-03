@@ -2,10 +2,9 @@
 
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/clipy-hooks?style=flat-square&logo=python&logoColor=white)](https://pypi.org/project/clipy-hooks/)
 [![PyPI](https://img.shields.io/pypi/v/clipy-hooks?style=flat-square&logo=pypi&logoColor=white)](https://pypi.org/project/clipy-hooks/)
-[![Tests](https://img.shields.io/github/workflow/status/CreatingNull/clipy-hooks/pre-commit?logo=pre-commit&style=flat-square&label=format)](https://github.com/CreatingNull/clipy-hooks/actions/workflows/run-pre-commit.yaml)
-[![Tests](https://img.shields.io/github/workflow/status/CreatingNull/clipy-hooks/tests?logo=GitHub&style=flat-square&label=tests)](https://github.com/CreatingNull/clipy-hooks/actions/workflows/run-tests.yaml)
+[![Format](https://img.shields.io/github/actions/workflow/status/CreatingNull/clipy-hooks/run-pre-commit.yaml?branch=main&logo=pre-commit&style=flat-square&label=format)](https://github.com/CreatingNull/clipy-hooks/actions/workflows/run-pre-commit.yaml)
+[![Tests](https://img.shields.io/github/actions/workflow/status/CreatingNull/clipy-hooks/run-tests.yaml?branch=main&logo=GitHub&style=flat-square&label=tests)](https://github.com/CreatingNull/clipy-hooks/actions/workflows/run-tests.yaml)
 [![License](https://img.shields.io/github/license/CreatingNull/clipy-hooks?style=flat-square)](https://github.com/CreatingNull/clipy-hooks/blob/master/LICENSE)
-[![Code Style](https://img.shields.io/badge/code%20style-black-000000.svg?style=flat-square)](https://github.com/psf/black)
 
 This project is a library handling generic execution of command line interfaces using python, it is a cross-platform shim between pre-installed system executables and pre-commit.
 The intended use-case is for creating new [pre-commit](https://pre-commit.com) hooks without fussing over the boilerplate of handling the CLI.
