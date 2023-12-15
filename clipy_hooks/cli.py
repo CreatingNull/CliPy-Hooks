@@ -15,9 +15,11 @@ class Command:
     def __init__(self, command: str, args: List[str], help_url: str = ""):
         """Construct the cli command class.
 
-        :param command: Name of the command, must be on path or define install location.
+        :param command: Name of the command, must be on path or define
+            install location.
         :param args: Additional arguments to provide to the CLI tool.
-        :param help_url: URL of project documentation to assist when things go wrong.
+        :param help_url: URL of project documentation to assist when
+            things go wrong.
         """
         self.args = args
         self.command = command
