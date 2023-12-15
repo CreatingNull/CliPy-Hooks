@@ -1,3 +1,11 @@
+Version 0.2.1
+-------------
+
+:Date: TBC
+
+* Officially supporting python 3.12.
+* Dependency updates.
+
 Version 0.2.0
 -------------
 
