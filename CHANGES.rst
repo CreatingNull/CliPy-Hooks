@@ -1,7 +1,7 @@
 Version 0.2.1
 -------------
 
-:Date: TBC
+:Date: 20-January-2024
 
 * Officially supporting python 3.12.
 * Dependency updates.
