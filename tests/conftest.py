@@ -1,4 +1,5 @@
 """Pytest configuration to create reusable fixtures."""
+
 import pytest
 
 from clipy_hooks.cli import Command, StaticAnalyzerCmd

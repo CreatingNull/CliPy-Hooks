@@ -1,4 +1,5 @@
 """Test cases for checking the cli module functionality."""
+
 from pathlib import Path
 
 import pytest
@@ -21,7 +22,7 @@ def test_check_installed_fails():
 
 
 def test_command_args(command: Command):
-    """Check the files are seperated correctly from args."""
+    """Check the files are separated correctly from args."""
     assert len(command.args) == 2
 
 

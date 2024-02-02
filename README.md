@@ -11,7 +11,7 @@ The intended use-case is for creating new [pre-commit](https://pre-commit.com) h
 
 Credit to pocc's awesome [pre-commit hooks](https://github.com/pocc/pre-commit-hooks) as he wrote the underlying class as part of his C linters.
 
----
+______________________________________________________________________
 
 ## Getting Started
 

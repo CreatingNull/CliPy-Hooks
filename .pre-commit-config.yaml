@@ -13,10 +13,34 @@ repos:
     -   id: check-case-conflict
     -   id: check-ast
     -   id: requirements-txt-fixer
+    -   id: debug-statements
+    -   id: check-builtin-literals
+    -   id: check-merge-conflict
+    -   id: check-executables-have-shebangs
+    -   id: check-shebang-scripts-are-executable
 
-# General Project code formatter.
+# Check for common yaml errors
+-   repo: https://github.com/adrienverge/yamllint.git
+    rev: v1.33.0
+    hooks:
+    -   id: yamllint
+        args: [--no-warnings, -d, "{extends: relaxed, rules: {new-lines: disable}}"]
+
+# Format markdown docs.
+-   repo: https://github.com/executablebooks/mdformat
+    # Do this before other tools "fixing" the line endings
+    rev: 0.7.17
+    hooks:
+    -   id: mdformat
+        args: [--number, --end-of-line=keep]
+        additional_dependencies:
+            - mdformat-toc
+            - mdformat-config
+            - mdformat-gfm
+
+# General project code formatter.
 -   repo: https://github.com/psf/black
-    rev: 23.12.1
+    rev: 24.1.1
     hooks:
     -   id: black
 
@@ -52,7 +76,7 @@ repos:
         args: [
             '--disable=E0401',  # Ignore imports when not running in a local env.
             '--disable=R0903',  # Class are built on interfaces so too few methods isn't important.
-            "--disable=R0902",
+            "--disable=R0902",  # Class attributes #s not too important at this helper level.
         ]
 
 # Lint docstrings.
@@ -64,3 +88,9 @@ repos:
         additional_dependencies:
             # TOML support only added natively in python 3.11
             - toml
+
+# Catch typos!
+-   repo: https://github.com/codespell-project/codespell
+    rev: v2.2.6
+    hooks:
+    -   id: codespell

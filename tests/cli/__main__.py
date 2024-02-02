@@ -1,4 +1,5 @@
 """Root script for launching the mocked CLI app."""
+
 from argparse import ArgumentParser
 
 
