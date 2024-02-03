@@ -112,7 +112,7 @@ class Command:
         # Ignored because mypy can't introspect the raise_error.
         return search.group(1)  # type: ignore
 
-    def _execute_with_arguments(self, args: List[str]) -> sp.CompletedProcess[bytes]:
+    def _execute_with_arguments(self, args: List[str]) -> sp.CompletedProcess:
         exe_path = (
             self.install_path.joinpath(self.command).resolve()
             if self.install_path != Path()
