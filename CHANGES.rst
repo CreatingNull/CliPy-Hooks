@@ -1,7 +1,7 @@
 Version 0.2.2
 -------------
 
-:Date: TBC
+:Date: 3-February-2024
 
 * MyPy pre-commit hook added for static type checking.
 * ``cli.Command.check_installed`` updated to improve type safety.
