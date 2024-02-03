@@ -25,7 +25,7 @@ class Command:
         self.command = command
         self.install_path = Path()
         # Most use-cases should be either files or dir not both.
-        self.paths = []  # Positional path arguments to provide to CLI tool
+        self.paths: List[str] = []  # Positional path arguments to provide to CLI tool
 
         self.stdout = b""
         self.stderr = b""
@@ -38,11 +38,10 @@ class Command:
         """Check if command is installed and fail exit if not."""
         if self.install_path != Path():  # Resolve absolute executable
             path = Path(self.install_path).joinpath(self.command)
-            if not path.exists() or not path.is_file():
-                path = None  # Executable not found
+            executable_exists = path.exists() and path.is_file()
         else:  # Resolve command from PATH
-            path = shutil.which(self.command)
-        if path is None:
+            executable_exists = shutil.which(self.command) is not None
+        if not executable_exists:
             check_path = (
                 f"at '{self.install_path}'"
                 if self.install_path != Path()
@@ -110,18 +109,20 @@ class Command:
         if not search or len(search.groups()) == 0:
             details = "The version format for this command has changed."
             self.raise_error("getting version", details)
-        return search.group(1)
+        # Ignored because mypy can't introspect the raise_error.
+        return search.group(1)  # type: ignore
 
-    def _execute_with_arguments(self, args: List) -> sp.CompletedProcess:
+    def _execute_with_arguments(self, args: List[str]) -> sp.CompletedProcess[bytes]:
+        exe_path = (
+            self.install_path.joinpath(self.command).resolve()
+            if self.install_path != Path()
+            else Path(self.command)  # On path
+        )
         args = [
-            (
-                self.install_path.joinpath(self.command).resolve()
-                if self.install_path != Path()
-                else Path(self.command)  # On path
-            ),
+            str(exe_path),
             *args,
         ]
-        if args[0].suffix == ".py":  # Run python script
+        if exe_path.suffix == ".py":  # Run python script
             args.insert(0, "python")
         return sp.run(  # nosec B603
             # We assemble the args internally so should be safe

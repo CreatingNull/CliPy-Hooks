@@ -8,11 +8,16 @@ from clipy_hooks.cli import Command, StaticAnalyzerCmd
 
 # Protected access is okay for testing.
 # pylint: disable=W0212
+# No point typing test case functions.
+# mypy: disable-error-code=no-untyped-def
 
 
 def test_check_installed(static_analyser: StaticAnalyzerCmd):
     """Checks the test command is 'installed'."""
-    assert static_analyser.check_installed() is None
+    try:
+        static_analyser.check_installed()
+    except SystemExit:
+        pytest.fail("Unexpected error raised in `check_installed`.")
 
 
 def test_check_installed_fails():
@@ -40,7 +45,10 @@ def test_command_install_path(command: Command):
 def test_command_version_match(command: Command):
     """Check hook version check works correctly."""
     command.args.extend(["--version", "1.0.0"])
-    assert command._parse_args() is None
+    try:
+        command._parse_args()
+    except SystemExit:
+        pytest.fail("Unexpected error raised in `_parse_args`.")
 
 
 def test_command_version_mismatch(command: Command):

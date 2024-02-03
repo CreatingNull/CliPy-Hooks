@@ -1,3 +1,14 @@
+Version 0.2.2
+-------------
+
+:Date: TBC
+
+* MyPy pre-commit hook added for static type checking.
+* ``cli.Command.check_installed`` updated to improve type safety.
+* ``cli.Command._execute_with_arguments`` updated to improve type safety.
+* Improved type safety of checking for absence of errors in tests.
+* Additional pre-commit hooks added to improve maintainability.
+
 Version 0.2.1
 -------------
 
